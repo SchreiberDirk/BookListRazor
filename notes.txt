@@ -1,0 +1,73 @@
+Razor-Pages:
+
+Packages needed:
+
+Microsoft.ASPNetCore.MVC.Razor.RunTimeCompilation
+
+zum aufsetzen der Datenbank EntityFramework:
+Microsft.EnityFrameWorkCore
+Microsoft.EntityFrameworkCore.sqlServer
+Microsoft.EntityFrameworkCore.tools
+
+Servername in appsettings.json eintragen --> connectionString
+
+"ConnectionStrings": {
+    "DefaultConnection": "Server=DESKTOP-SU7GL22;Database=BookListRazor;Trusted_Connection=True;MultipleActiveResultsSets=True"
+  },
+
+für die Migration muss jetzt eine Klasse "ApplicationDbContext" in Model erstellt werden, muss von DbContext erben. usings Microsoft.EntityFramework.Core
+
+nun in startup.cs die ConfigurationService anpassen services.AddDbContext....
+dann über nuget console:
+add-migration + name
+danach:
+update-database
+
+sql script ist nun gelaufen und die Datenbank ist erstellt
+
+-------
+neue razor page erstellen unter pages-> booklist
+
+immer wenn daten aus der db benötigt werden muss die applicationDbContext benutzt werden
+-------
+to enable the sumbit(create) button we need to implement a post-handler to the create page model
+----
+validation sollten immer server side und client side gemacht werden:
+SERVER SIDE im page handler:
+ if (ModelState.IsValid)
+            {
+                await _db.Book.AddAsync(Book);          // hinzufügen der Daten
+                await _db.SaveChangesAsync();           // Sichern der Daten in Datenbank
+                return RedirectToPage("Index");         // weiterleitung an Index-Seite
+            }
+
+Client Side im View:
+@section Scripts{ 
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+links für mehr styling:
+
+SweetAlert für Alert-Meldungen
+toastr for notifications
+datatables.net für schöne Tabellen
+
+CSS:
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+
+JS:
+ <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+cdns müssen in Layout eingebunden werden!
+
+controller anlegen -> BookController
+
+in startup.cs service anlegen -> services.AddControllersWithViews();
+auch in Middlewares / endpoints
